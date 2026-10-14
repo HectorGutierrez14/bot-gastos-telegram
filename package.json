@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run && node --test \"scripts/*.test.mjs\"",
     "prepare": "git config core.hooksPath .githooks",
     "typecheck": "tsc --noEmit",
     "deploy": "wrangler deploy",
