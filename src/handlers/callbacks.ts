@@ -8,6 +8,7 @@ import { tecladoCategorias, tecladoConfirmacion } from "../teclados";
 import type { TgCallbackQuery } from "../telegram";
 import type { Gasto } from "../tipos";
 import { evaluarTope } from "../tope";
+import { procesarAjuste } from "./tarjetas";
 import { hoyBogota } from "../util/fechas";
 import { normalizar } from "../util/texto";
 
@@ -37,8 +38,7 @@ export async function procesarCallback(cq: TgCallbackQuery, updateId: number, de
   }
 
   if (cb.t === "aj") {
-    // Se conecta con el flujo de ajustes de tarjetas.
-    await deps.tg.answerCallbackQuery(cq.id, BOTON_INVALIDO);
+    await procesarAjuste(cq, cb, updateId, deps);
     return;
   }
 

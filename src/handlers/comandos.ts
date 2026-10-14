@@ -1,15 +1,18 @@
 import { buscarCategoria, CATEGORIAS } from "../categorias";
 import { listarAprendidos, olvidar } from "../db/aprendizaje";
 import { borrarGasto, ultimoGasto } from "../db/gastos";
-import { ultimoMovimiento } from "../db/pagos";
+import { borrarPago, obtenerPago, reabrirAjuste, ultimoMovimiento } from "../db/pagos";
 import type { Deps } from "../deps";
 import { COMANDO_DESCONOCIDO, TEXTO_AYUDA, textoConfirmacion } from "../mensajes";
 import { parseComando } from "../parse/comando";
+import { nombreTarjeta } from "../tarjetas";
 import type { TgMessage } from "../telegram";
 import { comandoTope } from "../tope";
-import { hoyBogota } from "../util/fechas";
+import { formatCOP } from "../util/cop";
+import { fechaCorta, hoyBogota } from "../util/fechas";
 import { normalizar } from "../util/texto";
 import { aplicarCorreccion } from "./callbacks";
+import { comandoPagoTc, comandoSaldoTc, comandoTarjeta, preguntarAjuste } from "./tarjetas";
 
 const LISTA_CATEGORIAS = CATEGORIAS.join("\n");
 
@@ -24,6 +27,9 @@ const COMANDOS: Record<string, Comando> = {
   olvidar: comandoOlvidar,
   deshacer: comandoDeshacer,
   tope: comandoTope,
+  saldotc: comandoSaldoTc,
+  pagotc: comandoPagoTc,
+  tarjeta: comandoTarjeta,
 };
 
 /** Ejecuta un comando y envía su respuesta (si devuelve texto). */
@@ -54,12 +60,24 @@ async function comandoOlvidar(args: string, deps: Deps): Promise<string> {
   return (await olvidar(deps.db, normalizar(args))) ? `Olvidé "${args}".` : `No tenía aprendido "${args}".`;
 }
 
-async function comandoDeshacer(_args: string, deps: Deps): Promise<string> {
+async function comandoDeshacer(_args: string, deps: Deps): Promise<string | null> {
   const mov = await ultimoMovimiento(deps.db);
   if (!mov) return "No hay nada que deshacer.";
-  if (mov.tipo === "gasto") {
-    await borrarGasto(deps.db, mov.gasto.id);
-    return `🗑️ Eliminado: ${textoConfirmacion(mov.gasto, hoyBogota(deps.ahora())).replace(/^✅ /, "")}`;
+  if (mov.tipo === "pago") {
+    const p = mov.pago;
+    await borrarPago(deps.db, p.id);
+    return `🗑️ Eliminado: pago de ${formatCOP(p.monto)} a ${nombreTarjeta(p.tarjeta)} (${fechaCorta(p.fecha_pago)})`;
   }
-  return "No hay nada que deshacer.";
+
+  const g = mov.gasto;
+  await borrarGasto(deps.db, g.id);
+  const texto = `🗑️ Eliminado: ${textoConfirmacion(g, hoyBogota(deps.ahora())).replace(/^✅ /, "")}`;
+  if (g.pago_ajuste_id === null) return texto;
+
+  // Gasto de ajuste: se reabre el pago y se vuelve a preguntar qué fue la diferencia.
+  await deps.tg.sendMessage(deps.chatId, texto);
+  await reabrirAjuste(deps.db, g.pago_ajuste_id);
+  const pago = await obtenerPago(deps.db, g.pago_ajuste_id);
+  if (pago) await preguntarAjuste(deps, pago);
+  return null;
 }

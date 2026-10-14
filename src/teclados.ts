@@ -28,3 +28,14 @@ export function tecladoCategorias(gastoId: number): InlineKeyboard {
   filas.push([boton("Cancelar", `cancel:${gastoId}`)]);
   return { inline_keyboard: filas };
 }
+
+/** Opciones cuando un pago deja el saldo de la tarjeta en negativo. */
+export function tecladoAjuste(pagoId: number): InlineKeyboard {
+  return {
+    inline_keyboard: [
+      [boton("Intereses / cuota de manejo", `aj:${pagoId}:int`)],
+      [boton("Compra no registrada", `aj:${pagoId}:compra`)],
+      [boton("Saldo a favor", `aj:${pagoId}:favor`)],
+    ],
+  };
+}
