@@ -64,7 +64,7 @@ describe("registro de gastos", () => {
       telegram_update_id: u.update_id,
       linea: 0,
       fecha_gasto: "2026-10-13",
-      registrado_utc: "2026-10-14T15:00:01.000Z",
+      registrado_utc: "2026-10-14T15:00:02.000Z",
       monto: 20000,
       concepto: "Taxi aeropuerto",
       categoria: "Comida",
@@ -156,5 +156,37 @@ describe("registro de gastos", () => {
   it("un texto que no empieza por / nunca es comando", async () => {
     await procesar(mensaje("cambiar aceite moto 80k"));
     expect((await gastos())[0]).toMatchObject({ categoria: "Moto", concepto: "cambiar aceite moto" });
+  });
+});
+
+describe("presupuesto de tiempo y errores", () => {
+  it("deja de llamar a Gemini tras 15 s de procesamiento y clasifica el resto como fallback", async () => {
+    let t = new Date("2026-10-14T15:00:00.000Z").getTime();
+    deps = crearDepsPrueba({ ahora: () => new Date(t) });
+    deps.clasificarIA.mockImplementation(async () => {
+      t += 8000; // cada llamada a Gemini tarda 8 s (timeout)
+      return "Comida";
+    });
+    await procesar(mensaje("1000 a\n1000 b\n1000 c\n1000 d"));
+    expect(deps.clasificarIA).toHaveBeenCalledTimes(2);
+    expect((await gastos()).map((g) => g.fuente_clasificacion)).toEqual(["ia", "ia", "fallback", "fallback"]);
+    expect(deps.tg.textos().length).toBe(4);
+  });
+
+  it("si el procesamiento falla avisa al usuario", async () => {
+    deps.clasificarIA.mockRejectedValue(new Error("bug"));
+    await procesar(mensaje("35000 almuerzo"));
+    expect(deps.tg.textos()).toEqual(["Ocurrió un error, intenta de nuevo"]);
+  });
+
+  it("si falla un botón responde el callback y avisa", async () => {
+    deps.tg.editMessageReplyMarkup = async () => {
+      throw new Error("bug");
+    };
+    await procesar(mensaje("35000 almuerzo"));
+    const id = (await gastos())[0].id;
+    deps.tg.limpiar();
+    await procesar(callback(`edit:${id}`));
+    expect(deps.tg.textos()).toEqual(["Ocurrió un error, intenta de nuevo"]);
   });
 });

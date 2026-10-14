@@ -28,6 +28,7 @@ Comandos:
 export const SOLO_TEXTO = "Por ahora solo entiendo texto";
 export const MENSAJE_LARGO = "El mensaje es muy largo: máximo 1.000 caracteres y 20 líneas.";
 export const NOTA_FALLBACK = "⚠️ No pude clasificarlo automáticamente: quedó en Otros.";
+export const ERROR_GENERICO = "Ocurrió un error, intenta de nuevo";
 export const COMANDO_DESCONOCIDO = "Comando no reconocido. Escribe /ayuda";
 
 /** "✅ $35.000 · Comida · almuerzo · TC Nu · 13/10" (tarjeta y fecha solo si aplican). */

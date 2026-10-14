@@ -11,6 +11,11 @@ import { hoyBogota } from "../util/fechas";
 
 const MAX_CARACTERES = 1000;
 const MAX_LINEAS = 20;
+/**
+ * Workers corta waitUntil ~30 s después de responder. Pasado este presupuesto no se
+ * llama más a Gemini (8 s de timeout por llamada) y las líneas restantes van a Otros.
+ */
+const PRESUPUESTO_IA_MS = 15_000;
 
 /** Registra cada línea del mensaje como un gasto independiente, con su propia confirmación. */
 export async function registrarGastos(msg: TgMessage, updateId: number, deps: Deps): Promise<void> {
@@ -20,6 +25,10 @@ export async function registrarGastos(msg: TgMessage, updateId: number, deps: De
     await deps.tg.sendMessage(msg.chat.id, MENSAJE_LARGO);
     return;
   }
+
+  const limiteIA = deps.ahora().getTime() + PRESUPUESTO_IA_MS;
+  const clasificarIA = (concepto: string) =>
+    deps.ahora().getTime() < limiteIA ? deps.clasificarIA(concepto) : Promise.resolve(null);
 
   for (const [i, linea] of lineas.entries()) {
     const ahora = deps.ahora();
@@ -33,7 +42,7 @@ export async function registrarGastos(msg: TgMessage, updateId: number, deps: De
 
     const { categoria, fuente } = await clasificar(r.valor.concepto, {
       buscarAprendido: (norm) => buscarAprendido(deps.db, norm),
-      clasificarIA: deps.clasificarIA,
+      clasificarIA,
     });
     const gasto = {
       telegram_update_id: updateId,
