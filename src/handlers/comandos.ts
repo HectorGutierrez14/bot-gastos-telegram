@@ -3,6 +3,7 @@ import { listarAprendidos, olvidar } from "../db/aprendizaje";
 import { borrarGasto, ultimoGasto } from "../db/gastos";
 import { borrarPago, obtenerPago, reabrirAjuste, ultimoMovimiento } from "../db/pagos";
 import type { Deps } from "../deps";
+import { comandoExportar } from "../csv";
 import { comandoInforme } from "../informe";
 import { COMANDO_DESCONOCIDO, TEXTO_AYUDA, textoConfirmacion } from "../mensajes";
 import { parseComando } from "../parse/comando";
@@ -32,6 +33,7 @@ const COMANDOS: Record<string, Comando> = {
   pagotc: comandoPagoTc,
   tarjeta: comandoTarjeta,
   informe: comandoInforme,
+  exportar: comandoExportar,
 };
 
 /** Ejecuta un comando y envía su respuesta (si devuelve texto). */
