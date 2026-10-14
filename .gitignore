@@ -1,0 +1,28 @@
+# Secretos: NUNCA se suben
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.env
+.env.*
+!.env.example
+
+# Wrangler: estado y base de datos local con tus gastos de prueba
+.wrangler/
+
+# Dependencias y builds
+node_modules/
+dist/
+
+# Exportaciones y datos personales
+*.csv
+*.sqlite
+*.sqlite3
+*.db
+
+# Claude Code: configuración personal
+.claude/settings.local.json
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log
