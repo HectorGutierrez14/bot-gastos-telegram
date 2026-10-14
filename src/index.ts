@@ -2,6 +2,7 @@ import { procesarUpdate } from "./bot";
 import { crearDeps } from "./deps";
 import type { Env } from "./env";
 import { log } from "./log";
+import { ejecutarCron } from "./scheduled";
 import type { TgUpdate } from "./telegram";
 
 const MAX_BODY = 64 * 1024;
@@ -48,5 +49,12 @@ export default {
     return new Response("ok");
   },
 
-  async scheduled(_controller: ScheduledController, _env: Env, _ctx: ExecutionContext): Promise<void> {},
+  async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    const deps = { ...crearDeps(env), ahora: () => new Date(controller.scheduledTime) };
+    ctx.waitUntil(
+      ejecutarCron(deps).catch((e: unknown) => {
+        log("error_cron", { error: e instanceof Error ? e.name : "desconocido" });
+      }),
+    );
+  },
 } satisfies ExportedHandler<Env>;
