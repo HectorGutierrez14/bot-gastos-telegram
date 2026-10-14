@@ -1,3 +1,4 @@
+import { CATEGORIAS } from "./categorias";
 import { nombreTarjeta } from "./tarjetas";
 import type { InlineKeyboard } from "./telegram";
 import type { Gasto } from "./tipos";
@@ -14,5 +15,16 @@ export function tecladoConfirmacion(g: Pick<Gasto, "id" | "tarjeta">, tarjetas: 
     ]);
   }
   filas.push([boton("✏️ Cambiar categoría", `edit:${g.id}`)]);
+  return { inline_keyboard: filas };
+}
+
+/** Todas las categorías en filas de 3 (cat:<id>:<índice>) más Cancelar. */
+export function tecladoCategorias(gastoId: number): InlineKeyboard {
+  const filas: InlineKeyboard["inline_keyboard"] = [];
+  CATEGORIAS.forEach((cat, i) => {
+    if (i % 3 === 0) filas.push([]);
+    filas[filas.length - 1].push(boton(cat, `cat:${gastoId}:${i}`));
+  });
+  filas.push([boton("Cancelar", `cancel:${gastoId}`)]);
   return { inline_keyboard: filas };
 }
