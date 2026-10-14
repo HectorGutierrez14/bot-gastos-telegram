@@ -75,3 +75,29 @@ describe("otras rutas", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("logs", () => {
+  it("ningún log contiene el token ni los secretos, aunque Telegram y Gemini fallen", async () => {
+    const salida: string[] = [];
+    for (const m of ["log", "error", "warn", "info", "debug"] as const) {
+      vi.spyOn(console, m).mockImplementation((...a: unknown[]) => {
+        salida.push(a.map(String).join(" "));
+      });
+    }
+    fetchMock.mockImplementation(async (u: RequestInfo | URL) => {
+      if (String(u).includes("generativelanguage")) throw new TypeError(`fetch failed ${String(u)}`);
+      return Response.json({ ok: false, description: "Bad Request: chat not found" }, { status: 400 });
+    });
+    const update = (id: number, text: string) =>
+      JSON.stringify({ update_id: id, message: { message_id: 1, from: { id: 123456 }, chat: { id: 123456, type: "private" }, text } });
+    await llamar({ body: update(60, "35000 almuerzo"), headers: HEADER_OK });
+    await llamar({ body: update(61, "/informe"), headers: HEADER_OK });
+    vi.restoreAllMocks();
+
+    const todo = salida.join("\n");
+    expect(todo).toContain("telegram_error");
+    for (const secreto of ["test-bot-token", "test-webhook-secret", "test-gemini-key", "almuerzo"]) {
+      expect(todo).not.toContain(secreto);
+    }
+  });
+});
