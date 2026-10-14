@@ -16,6 +16,7 @@ dist/
 # Exportaciones y datos personales
 *.csv
 *.sqlite
+*.sqlite*
 *.sqlite3
 *.db
 

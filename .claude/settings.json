@@ -4,7 +4,12 @@
       "Read(./.dev.vars)",
       "Edit(./.dev.vars)",
       "Read(./.env)",
-      "Read(./.env.*)"
+      "Read(./.env.*)",
+      "Write(./.dev.vars)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Write(./.env)",
+      "Write(./.env.*)"
     ]
   }
 }

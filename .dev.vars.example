@@ -1,0 +1,5 @@
+TELEGRAM_BOT_TOKEN=reemplazar_por_token_de_botfather
+TELEGRAM_WEBHOOK_SECRET=reemplazar_por_secreto_aleatorio
+GEMINI_API_KEY=reemplazar_por_llave_de_ai_studio
+ALLOWED_TELEGRAM_USER_ID=reemplazar_por_tu_id_numerico
+WORKER_URL=https://bot-gastos-telegram.reemplazar-subdominio.workers.dev
