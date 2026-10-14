@@ -6,6 +6,7 @@ import type { Deps } from "../deps";
 import { COMANDO_DESCONOCIDO, TEXTO_AYUDA, textoConfirmacion } from "../mensajes";
 import { parseComando } from "../parse/comando";
 import type { TgMessage } from "../telegram";
+import { comandoTope } from "../tope";
 import { hoyBogota } from "../util/fechas";
 import { normalizar } from "../util/texto";
 import { aplicarCorreccion } from "./callbacks";
@@ -22,6 +23,7 @@ const COMANDOS: Record<string, Comando> = {
   aprendido: comandoAprendido,
   olvidar: comandoOlvidar,
   deshacer: comandoDeshacer,
+  tope: comandoTope,
 };
 
 /** Ejecuta un comando y envía su respuesta (si devuelve texto). */
