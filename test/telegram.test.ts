@@ -25,6 +25,17 @@ function capturarLogs() {
 afterEach(() => vi.restoreAllMocks());
 
 describe("TelegramClient", () => {
+  it("llama a fetch como función suelta (Workers lanza Illegal invocation si recibe otro this)", async () => {
+    // Igual que el fetch real del runtime: falla si se invoca como método de otro objeto.
+    const fetchEstricto = vi.fn(function (this: unknown) {
+      if (this !== undefined && this !== globalThis) throw new TypeError("Illegal invocation");
+      return Promise.resolve(Response.json({ ok: true, result: { message_id: 5 } }));
+    });
+    const tg = new TelegramClient("test-bot-token", fetchEstricto as unknown as typeof fetch);
+    expect(await tg.sendMessage(1, "hola")).toBe(5);
+  });
+
+
   it("llama al método con JSON y sin parse_mode, y devuelve message_id", async () => {
     const f = fetchFalso(() => Response.json({ ok: true, result: { message_id: 77 } }));
     const tg = new TelegramClient("test-bot-token", f.fn);

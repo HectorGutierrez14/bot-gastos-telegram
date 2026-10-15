@@ -53,7 +53,9 @@ export class TelegramClient implements TelegramApi {
   private async llamar(metodo: string, body: Record<string, unknown> | FormData): Promise<unknown | null> {
     try {
       const esForm = body instanceof FormData;
-      const res = await this.fetchFn(`https://api.telegram.org/bot${this.token}/${metodo}`, {
+      // fetch debe llamarse como función suelta: en Workers, `this.fetchFn(...)` lanza "Illegal invocation".
+      const fetchFn = this.fetchFn;
+      const res = await fetchFn(`https://api.telegram.org/bot${this.token}/${metodo}`, {
         method: "POST",
         headers: esForm ? undefined : { "content-type": "application/json" },
         body: esForm ? body : JSON.stringify(body),
