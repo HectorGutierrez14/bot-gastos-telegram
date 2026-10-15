@@ -133,6 +133,19 @@ Tarjetas de crédito (informativo, no suma al total):
     ).toBe("📊 Informe septiembre 2026\n01/09/2026 – 30/09/2026\n\nNo registraste gastos en este periodo.");
   });
 
+  it("recorta conceptos largos en el top 3", () => {
+    const periodo = mesPasado("2026-10-14");
+    const texto = formatearInforme({
+      periodo,
+      actual: resumir([g("2026-09-10", 1000, "Comida", "y".repeat(500))]),
+      anterior: resumir([]),
+      comparacion: rangoComparacion(periodo),
+      tope: null,
+      tarjetas: [],
+    });
+    expect(texto).toContain(`1. $1.000 · Comida · ${"y".repeat(59)}… · 10/09`);
+  });
+
   it("top 3 desempata por fecha", () => {
     const r = resumir([g("2026-10-03", 5, "Comida", "b"), g("2026-10-01", 5, "Comida", "a"), g("2026-10-02", 9, "Comida", "c")]);
     expect(r.top.map((x) => x.concepto)).toEqual(["c", "a", "b"]);

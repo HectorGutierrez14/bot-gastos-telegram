@@ -7,6 +7,9 @@ import { calcularSaldo, nombreTarjeta } from "./tarjetas";
 import type { Gasto } from "./tipos";
 import { formatCOP, formatVariacion } from "./util/cop";
 import { fechaCorta, fechaLarga, hoyBogota } from "./util/fechas";
+import { recortar } from "./util/texto";
+
+const MAX_CONCEPTO_TOP = 60;
 
 export interface Resumen {
   total: number;
@@ -78,7 +81,7 @@ export function formatearInforme(d: DatosInforme): string {
   }
 
   const top = actual.top.map(
-    (g, i) => `${i + 1}. ${formatCOP(g.monto)} · ${g.categoria} · ${g.concepto} · ${fechaCorta(g.fecha_gasto)}`,
+    (g, i) => `${i + 1}. ${formatCOP(g.monto)} · ${g.categoria} · ${recortar(g.concepto, MAX_CONCEPTO_TOP)} · ${fechaCorta(g.fecha_gasto)}`,
   );
 
   const orden = (k: string) => (k === "efectivo" ? 0 : k === "sin_definir" ? 2 : 1);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { contienePalabra, normalizar } from "../../src/util/texto";
+import { contienePalabra, normalizar, recortar } from "../../src/util/texto";
 
 describe("normalizar", () => {
   it("pasa a minúsculas, quita tildes y colapsa espacios", () => {
@@ -19,5 +19,13 @@ describe("contienePalabra", () => {
     expect(contienePalabra("motor", "moto")).toBe(-1);
     expect(contienePalabra("motos", "moto")).toBe(-1);
     expect(contienePalabra("2moto", "moto")).toBe(-1);
+  });
+});
+
+describe("recortar", () => {
+  it("deja intactos los textos cortos y recorta los largos con …", () => {
+    expect(recortar("almuerzo", 60)).toBe("almuerzo");
+    expect(recortar("a".repeat(60), 60)).toBe("a".repeat(60));
+    expect(recortar("a".repeat(61), 60)).toBe(`${"a".repeat(59)}…`);
   });
 });
