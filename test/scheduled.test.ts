@@ -39,6 +39,20 @@ describe("cron mensual", () => {
     expect(envios[0].args[1]).toMatch(/^📊 Informe octubre 2026\n01\/10\/2026 – 31\/10\/2026\n\nTotal: \$45.000 en 1 gasto/);
   });
 
+  it("si Telegram falla no lo marca como enviado y la siguiente ejecución reintenta", async () => {
+    const enviar = deps.tg.sendMessage.bind(deps.tg);
+    let fallar = true;
+    deps.tg.sendMessage = async (...a: Parameters<typeof enviar>) => {
+      if (fallar) return null;
+      return enviar(...a);
+    };
+    await ejecutarCron(deps);
+    fallar = false;
+    await ejecutarCron(deps);
+    await ejecutarCron(deps);
+    expect(deps.tg.textos().length).toBe(1);
+  });
+
   it("envía un mensaje aunque el mes no tenga gastos", async () => {
     await ejecutarCron(deps);
     expect(deps.tg.textos()).toEqual(["📊 Informe octubre 2026\n01/10/2026 – 31/10/2026\n\nNo registraste gastos en este periodo."]);
