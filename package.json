@@ -2,22 +2,32 @@
   "name": "bot-gastos-telegram",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "git config core.hooksPath .githooks"
+    "test": "vitest run && node --test \"scripts/*.test.mjs\"",
+    "prepare": "git config core.hooksPath .githooks",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+    "deploy": "wrangler deploy",
+    "set-webhook": "node scripts/set-webhook.mjs",
+    "webhook-info": "node scripts/webhook-info.mjs"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/HectorGutierrez14/bot-gastos-telegram.git"
   },
   "keywords": [],
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/HectorGutierrez14/bot-gastos-telegram/issues"
   },
   "homepage": "https://github.com/HectorGutierrez14/bot-gastos-telegram#readme",
   "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.2",
+    "@cloudflare/workers-types": "^5.20261014.1",
+    "@types/node": "^24.19.2",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11",
     "wrangler": "^4.151.0"
-  }
+  },
+  "private": "true",
+  "license": "MIT"
 }

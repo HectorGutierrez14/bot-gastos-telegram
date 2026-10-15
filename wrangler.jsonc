@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bot-gastos-telegram",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bot-gastos-db",
+      "database_id": "b041a184-08db-4763-9079-675cab6e21f5",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "GEMINI_MODEL": "gemini-3.5-flash-lite",
+    "TARJETAS_CREDITO": "nu,rappi"
+  },
+  "triggers": {
+    "crons": ["0 13 1 * *"]
+  }
+}
