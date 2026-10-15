@@ -42,6 +42,7 @@ describe("tarjetas", () => {
   it("parseTarjetas normaliza espacios y mayúsculas", () => {
     expect(parseTarjetas(" Nu , RAPPI ,")).toEqual(["nu", "rappi"]);
     expect(parseTarjetas("")).toEqual([]);
+    expect(parseTarjetas("Éxito, Nu")).toEqual(["exito", "nu"]);
   });
   it("nombreTarjeta", () => {
     expect(nombreTarjeta("rappi")).toBe("TC Rappi");
