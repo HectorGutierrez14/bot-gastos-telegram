@@ -21,6 +21,11 @@ export function marcarInformeEnviado(db: D1Database, periodo: string, utc: strin
   );
 }
 
+export async function informeYaEnviado(db: D1Database, periodo: string): Promise<boolean> {
+  const r = await db.prepare("SELECT 1 AS x FROM informes_enviados WHERE periodo = ?").bind(periodo).first();
+  return r !== null;
+}
+
 /** true si el update no se había procesado. */
 export function marcarUpdate(db: D1Database, updateId: number, utc: string): Promise<boolean> {
   return insertarSiNoExiste(

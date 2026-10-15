@@ -11,6 +11,7 @@ import type { PagoTarjeta } from "../tipos";
 import { evaluarTope } from "../tope";
 import { formatCOP } from "../util/cop";
 import { fechaCorta, hoyBogota } from "../util/fechas";
+import { normalizar } from "../util/texto";
 
 function aliasDesconocido(alias: string, deps: Deps): string {
   return `No conozco la tarjeta "${alias}". Tarjetas configuradas: ${deps.tarjetas.join(", ")}`;
@@ -20,7 +21,7 @@ function aliasDesconocido(alias: string, deps: Deps): string {
 export async function comandoSaldoTc(args: string, deps: Deps): Promise<string> {
   const [aliasRaw, ...resto] = args.split(/\s+/).filter(Boolean);
   if (!aliasRaw || resto.length === 0) return "Uso: /saldotc <tarjeta> <monto>";
-  const alias = aliasRaw.toLowerCase();
+  const alias = normalizar(aliasRaw);
   if (!deps.tarjetas.includes(alias)) return aliasDesconocido(aliasRaw, deps);
   const texto = resto.join(" ");
   let monto = 0;
@@ -38,7 +39,7 @@ export async function comandoPagoTc(args: string, deps: Deps, updateId: number):
   const tokens = args.split(/\s+/).filter(Boolean);
   const [aliasRaw, ...resto] = tokens;
   if (!aliasRaw || resto.length === 0) return "Uso: /pagotc <tarjeta> <monto> [fecha]";
-  const alias = aliasRaw.toLowerCase();
+  const alias = normalizar(aliasRaw);
   if (!deps.tarjetas.includes(alias)) return aliasDesconocido(aliasRaw, deps);
 
   const ahora = deps.ahora();

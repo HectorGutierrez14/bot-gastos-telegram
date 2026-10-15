@@ -76,6 +76,13 @@ describe("/exportar", () => {
     });
   });
 
+  it("si el archivo no se puede enviar, avisa", async () => {
+    await enviar("2000 x");
+    deps.tg.sendDocument = async () => false;
+    await enviar("/exportar");
+    expect(deps.tg.textos()).toEqual(["No pude enviar el archivo, intenta de nuevo."]);
+  });
+
   it("periodo vacío responde con texto y no envía archivo", async () => {
     await enviar("/exportar agosto");
     expect(deps.tg.de("sendDocument")).toEqual([]);

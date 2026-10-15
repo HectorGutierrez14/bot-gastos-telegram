@@ -67,6 +67,11 @@ describe("/aprendido y /olvidar", () => {
     expect(await enviar("/aprendido")).toEqual(["Conceptos aprendidos:\n• uber → Transporte\n• almuerzo → Comida"]);
   });
 
+  it("recorta conceptos largos en la lista", async () => {
+    await aprender(env.DB, "x".repeat(200), "Comida", "2026-10-14T10:00:00.000Z");
+    expect(await enviar("/aprendido")).toEqual([`Conceptos aprendidos:\n• ${"x".repeat(59)}… → Comida`]);
+  });
+
   it("olvida un concepto normalizado", async () => {
     await aprender(env.DB, "almuerzo con jefe", "Comida", "2026-10-14T10:00:00.000Z");
     expect(await enviar("/olvidar Almuerzo  con Jéfe")).toEqual(['Olvidé "Almuerzo  con Jéfe".']);

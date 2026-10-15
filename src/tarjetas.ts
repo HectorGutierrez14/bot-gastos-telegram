@@ -1,12 +1,10 @@
 import { comprasTarjeta } from "./db/gastos";
 import { getSaldoInicial, totalPagos } from "./db/pagos";
+import { normalizar } from "./util/texto";
 
-/** Alias de tarjetas desde TARJETAS_CREDITO ("nu,rappi"), en minúsculas y sin vacíos. */
+/** Alias de tarjetas desde TARJETAS_CREDITO ("nu,rappi"), normalizados (sin tildes ni mayúsculas) y sin vacíos. */
 export function parseTarjetas(raw: string): string[] {
-  return raw
-    .split(",")
-    .map((t) => t.trim().toLowerCase())
-    .filter(Boolean);
+  return raw.split(",").map(normalizar).filter(Boolean);
 }
 
 export function nombreTarjeta(alias: string): string {

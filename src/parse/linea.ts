@@ -18,7 +18,11 @@ const AYUDA: Resultado<LineaGasto> = { ok: false, error: "ayuda" };
  * cualquier orden de monto/concepto. error "ayuda" = responder con el texto de ayuda.
  */
 export function parseLinea(linea: string, hoy: string, tarjetas: string[]): Resultado<LineaGasto> {
-  let tokens = linea.trim().split(/\s+/).filter(Boolean);
+  // Un "$" suelto ("$ 35000") no aporta nada: se descarta.
+  let tokens = linea
+    .trim()
+    .split(/\s+/)
+    .filter((t) => t !== "" && t !== "$");
 
   // 1. Fecha opcional al inicio.
   let fecha = hoy;

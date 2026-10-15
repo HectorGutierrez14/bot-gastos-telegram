@@ -60,6 +60,10 @@ export async function comandoExportar(args: string, deps: Deps): Promise<string 
     })),
   ].sort((a, b) => a.orden.localeCompare(b.orden));
 
-  await deps.tg.sendDocument(deps.chatId, `gastos_${rango.clave}.csv`, generarCSV([ENCABEZADO, ...movimientos.map((m) => m.fila)]));
-  return null;
+  const enviado = await deps.tg.sendDocument(
+    deps.chatId,
+    `gastos_${rango.clave}.csv`,
+    generarCSV([ENCABEZADO, ...movimientos.map((m) => m.fila)]),
+  );
+  return enviado ? null : "No pude enviar el archivo, intenta de nuevo.";
 }

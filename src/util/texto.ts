@@ -18,3 +18,9 @@ export function contienePalabra(normalizado: string, palabra: string): number {
   const m = re.exec(normalizado);
   return m ? m.index + m[1].length : -1;
 }
+
+/** Recorta a `max` caracteres (contando el "…" final) para no pasar el límite de Telegram en listas. */
+export function recortar(s: string, max: number): string {
+  const chars = [...s];
+  return chars.length <= max ? s : `${chars.slice(0, max - 1).join("")}…`;
+}

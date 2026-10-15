@@ -12,11 +12,12 @@ import type { TgMessage } from "../telegram";
 import { comandoTope } from "../tope";
 import { formatCOP } from "../util/cop";
 import { fechaCorta, hoyBogota } from "../util/fechas";
-import { normalizar } from "../util/texto";
+import { normalizar, recortar } from "../util/texto";
 import { aplicarCorreccion } from "./callbacks";
 import { comandoPagoTc, comandoSaldoTc, comandoTarjeta, preguntarAjuste } from "./tarjetas";
 
 const LISTA_CATEGORIAS = CATEGORIAS.join("\n");
+const MAX_CONCEPTO_LISTA = 60;
 
 type Comando = (args: string, deps: Deps, updateId: number) => Promise<string | null>;
 
@@ -56,7 +57,7 @@ async function comandoCambiar(args: string, deps: Deps): Promise<string> {
 async function comandoAprendido(_args: string, deps: Deps): Promise<string> {
   const lista = await listarAprendidos(deps.db);
   if (lista.length === 0) return "Aún no he aprendido ningún concepto.";
-  return `Conceptos aprendidos:\n${lista.map((a) => `• ${a.concepto_normalizado} → ${a.categoria}`).join("\n")}`;
+  return `Conceptos aprendidos:\n${lista.map((a) => `• ${recortar(a.concepto_normalizado, MAX_CONCEPTO_LISTA)} → ${a.categoria}`).join("\n")}`;
 }
 
 async function comandoOlvidar(args: string, deps: Deps): Promise<string> {

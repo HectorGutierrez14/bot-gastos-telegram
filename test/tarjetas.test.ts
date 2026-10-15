@@ -207,6 +207,16 @@ describe("/deshacer con pagos y ajustes", () => {
   });
 });
 
+describe("alias con tildes", () => {
+  it("tc y los comandos reconocen la tarjeta con o sin tilde", async () => {
+    deps = crearDepsPrueba({ tarjetas: ["exito"] });
+    await enviar("50000 x tc Éxito");
+    await enviar("/saldotc éxito 1000");
+    await enviar("/pagotc EXITO 2000");
+    expect(await calcularSaldo(env.DB, "exito")).toEqual({ inicial: 1000, compras: 50000, pagos: 2000, saldo: 49000 });
+  });
+});
+
 describe("saldo", () => {
   it("los gastos sin tarjeta definida no cuentan en el saldo", async () => {
     await enviar("50000 x tc");
