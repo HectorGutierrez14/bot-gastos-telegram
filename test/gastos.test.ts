@@ -82,8 +82,13 @@ describe("registro de gastos", () => {
     expect(deps.tg.textos()).toEqual([
       "✅ $35.000 · Comida · almuerzo",
       `Línea 2: ${TEXTO_AYUDA}`,
-      "Línea 3: La fecha 31/02 no existe.",
+      "Línea 4: La fecha 31/02 no existe.",
     ]);
+  });
+
+  it("guarda la posición real de la línea, contando las vacías", async () => {
+    await procesar(mensaje("\n35000 almuerzo\n\n18000 uber"));
+    expect((await gastos()).map((g) => g.linea)).toEqual([1, 3]);
   });
 
   it("una sola línea inválida responde la ayuda sin prefijo", async () => {

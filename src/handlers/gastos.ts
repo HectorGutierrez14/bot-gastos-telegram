@@ -20,7 +20,11 @@ const PRESUPUESTO_IA_MS = 15_000;
 /** Registra cada línea del mensaje como un gasto independiente, con su propia confirmación. */
 export async function registrarGastos(msg: TgMessage, updateId: number, deps: Deps): Promise<void> {
   const texto = msg.text ?? "";
-  const lineas = texto.split("\n").filter((l) => l.trim() !== "");
+  // Se conserva la posición real de cada línea (contando las vacías) para "Línea N" y `linea`.
+  const lineas = texto
+    .split("\n")
+    .map((linea, i) => ({ linea, i }))
+    .filter(({ linea }) => linea.trim() !== "");
   if (texto.length > MAX_CARACTERES || lineas.length > MAX_LINEAS) {
     await deps.tg.sendMessage(msg.chat.id, MENSAJE_LARGO);
     return;
@@ -30,7 +34,7 @@ export async function registrarGastos(msg: TgMessage, updateId: number, deps: De
   const clasificarIA = (concepto: string) =>
     deps.ahora().getTime() < limiteIA ? deps.clasificarIA(concepto) : Promise.resolve(null);
 
-  for (const [i, linea] of lineas.entries()) {
+  for (const { linea, i } of lineas) {
     const ahora = deps.ahora();
     const hoy = hoyBogota(ahora);
     const r = parseLinea(linea, hoy, deps.tarjetas);
