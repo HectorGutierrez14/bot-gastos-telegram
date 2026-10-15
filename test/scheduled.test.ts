@@ -40,14 +40,9 @@ describe("cron mensual", () => {
   });
 
   it("si Telegram falla no lo marca como enviado y la siguiente ejecución reintenta", async () => {
-    const enviar = deps.tg.sendMessage.bind(deps.tg);
-    let fallar = true;
-    deps.tg.sendMessage = async (...a: Parameters<typeof enviar>) => {
-      if (fallar) return null;
-      return enviar(...a);
-    };
+    vi.spyOn(deps.tg, "sendMessage").mockResolvedValueOnce(null);
     await ejecutarCron(deps);
-    fallar = false;
+    expect(deps.tg.textos().length).toBe(0);
     await ejecutarCron(deps);
     await ejecutarCron(deps);
     expect(deps.tg.textos().length).toBe(1);

@@ -29,7 +29,7 @@ export class FakeTelegram implements TelegramApi {
   llamadas: LlamadaTg[] = [];
   private siguienteId = 1000;
 
-  async sendMessage(chatId: number | string, text: string, teclado?: InlineKeyboard) {
+  async sendMessage(chatId: number | string, text: string, teclado?: InlineKeyboard): Promise<number | null> {
     this.llamadas.push({ metodo: "sendMessage", args: [chatId, text, teclado] });
     return this.siguienteId++;
   }
