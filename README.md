@@ -66,6 +66,8 @@ Todos los valores de abajo son placeholders: nunca pegues secretos reales en el 
 7. En GitHub, crea el Environment `production` (Settings → Environments), restringe los despliegues a la rama `main` y agrega dos secretos:
    - `CLOUDFLARE_API_TOKEN`: token con permisos Workers Scripts: Edit y D1: Edit.
    - `CLOUDFLARE_ACCOUNT_ID`.
+
+   > ⚠️ **La restricción a `main` es obligatoria antes del primer despliegue.** El workflow `deploy` también se puede lanzar a mano (`workflow_dispatch`) desde cualquier rama; la regla del Environment es lo que impide que una rama distinta de `main` use los secretos de Cloudflare y despliegue a producción.
 8. Haz merge a `main`: el workflow `deploy` corre las pruebas, aplica las migraciones y despliega.
 9. Agrega `WORKER_URL=https://bot-gastos-telegram.<tu-subdominio>.workers.dev` a `.dev.vars` y ejecuta `npm run set-webhook`. Para revisar el estado: `npm run webhook-info`.
 
