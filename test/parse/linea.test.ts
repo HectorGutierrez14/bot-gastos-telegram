@@ -25,6 +25,8 @@ describe("parseLinea: válidas", () => {
     ["tc nuu almuerzo 35000", HOY, 35000, "nuu almuerzo", "sin_definir"],
     ["  35000   almuerzo   con  jefe ", HOY, 35000, "almuerzo con jefe", null],
     ["35000 almuerzo 12/10", HOY, 35000, "almuerzo 12/10", null],
+    ["$ 35000 almuerzo", HOY, 35000, "almuerzo", null],
+    ["almuerzo $ 35.000 tc nu", HOY, 35000, "almuerzo", "nu"],
   ])("%s", (linea, fecha, monto, concepto, tarjeta) => {
     expect(parse(linea)).toEqual({ ok: true, valor: { fecha, monto, concepto, tarjeta } });
   });
