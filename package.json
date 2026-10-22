@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/HectorGutierrez14/bot-gastos-telegram#readme",
   "devDependencies": {
-    "@cloudflare/vitest-plugin": "^1.4.2",
+    "@cloudflare/vitest-plugin": "^1.4.5",
     "@cloudflare/workers-types": "^5.20261014.1",
     "@types/node": "^24.19.2",
     "typescript": "^7.0.2",
